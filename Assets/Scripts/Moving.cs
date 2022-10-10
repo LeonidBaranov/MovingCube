@@ -5,80 +5,64 @@ using UnityEngine.UI;
 
 public class Moving : MonoBehaviour
 {
-    [SerializeField] private Points_Properties _pointsProperties;
-    [SerializeField] private GameObject Cube;
-    [SerializeField] private Text buttonText;
+    [SerializeField] private PointsProperties _pointsProperties;
+    [SerializeField] private GameObject _cube;
+    [SerializeField] private Text _buttonText;
 
-    private GameObject[] points;
-    private Vector3[] reverse_array;
-
-    private float speedRotationX;
-    private float speedRotationY;
-    private float speedRotationZ;
-    private float movingSpeed;
-    private int count = 0;
-    private int array_size;
-
-    private bool isPlayed = false;
-
-    private void Start()
-    {
-        points = _pointsProperties.points;
-        
-        speedRotationX = _pointsProperties.rotatoinXspeed;
-        speedRotationY = _pointsProperties.rotatoinYspeed;
-        speedRotationZ = _pointsProperties.rotatoinZspeed;
-        
-        array_size = points.Length;
-    }
+    private Vector3[] _reverseArray;
+    private int _count = 0;
+    private bool _isPlayed = false;
+    private float _movingSpeed;
 
     private void Reverse_array()
     {
-        reverse_array = new Vector3[array_size];
+        _reverseArray = new Vector3[_pointsProperties.Points.Length];
 
-        for (int index = 0; index < array_size; index++)
+        for (int index = 0; index < _pointsProperties.Points.Length; index++)
         {
-            reverse_array[index] = points[array_size - 1 - index].transform.position; 
+            _reverseArray[index] = _pointsProperties.Points[_pointsProperties.Points.Length - 1 - index].transform.position; 
         }
-        for (int index = 0; index < array_size; index++)
+        for (int index = 0; index < _pointsProperties.Points.Length; index++)
         {
-            points[index].transform.position = reverse_array[index]; 
+            _pointsProperties.Points[index].transform.position = _reverseArray[index]; 
         }
     }
 
     public void OnClickButton()
     {
-        isPlayed = !isPlayed;
+        _isPlayed = !_isPlayed;
     }
 
     private void Update()
     {
-        if (isPlayed == true)
+        if (_isPlayed == true)
         {
-            movingSpeed = _pointsProperties.movingSpeed;
-            buttonText.text = "Pause";
+            _movingSpeed = _pointsProperties.MovingSpeed;
+            _buttonText.text = "Pause";
 
-            Cube.transform.position = Vector3.MoveTowards(Cube.transform.position, points[count].transform.position, movingSpeed * Time.deltaTime);
+            _cube.transform.position = Vector3.MoveTowards(_cube.transform.position, _pointsProperties.Points[_count].transform.position, _pointsProperties.MovingSpeed * Time.deltaTime);
 
-            Cube.transform.Rotate(new Vector3(speedRotationX, speedRotationY, speedRotationZ) * Time.deltaTime);
+            _cube.transform.Rotate(new Vector3(_pointsProperties.RotatoinXspeed, _pointsProperties.RotatoinYspeed, _pointsProperties.RotatoinZspeed) * Time.deltaTime);
 
-            if (Cube.transform.position == points[count].transform.position)
+            if ((_cube.transform.position.x - _pointsProperties.Points[_count].transform.position.x <= 0.01) & 
+                (_cube.transform.position.y - _pointsProperties.Points[_count].transform.position.y <= 0.01) &
+                (_cube.transform.position.z - _pointsProperties.Points[_count].transform.position.z <= 0.01)) 
             {
-                if (count < array_size - 1)
+                if (_count < _pointsProperties.Points.Length - 1)
                 {
-                    count++;
+                    _count++;
                 }
-                else if (count == array_size - 1)
+                else if (_count == _pointsProperties.Points.Length - 1)
                 {
                     Reverse_array();
-                    count = 0;
+                    _count = 0;
                 }
             }
         }
-        else if (isPlayed == false)
+        else if (_isPlayed == false)
         {
-            movingSpeed = 0;
-            buttonText.text = "Play";
+            _movingSpeed = 0;
+            _buttonText.text = "Play";
         }
     }
 }
